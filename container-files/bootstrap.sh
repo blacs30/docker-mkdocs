@@ -2,13 +2,22 @@
 set -eu
 #### "Magic starts Here" - H. Potter #####
 check_install_status () {
-    if [[ ! -e /workdir/mkdocs ]]; then 
+    if [[ ! -e /workdir/mkdocs ]]; then
         mkdir -p /workdir/mkdocs
     fi
     cd /workdir/mkdocs
     if [[ ! -e "mkdocs.yml" ]]; then
     echo "No previous config. Starting fresh instalation"
     mkdocs new .
+    fi
+}
+#### "Magic starts Here" - H. Potter #####
+install_plugins () {
+    if [[ ! -z ${PLUGIN_LIST} ]]; then
+
+        for plugin in  $(echo $PLUGIN_LIST | sed "s/,/ /g"); do
+          pip install ${plugin}
+        done
     fi
 }
 start_mkdocs () {
@@ -23,7 +32,7 @@ start_mkdocs () {
 }
 
 get_docs () {
-    if [[ ! -e /workdir/mkdocs ]]; then 
+    if [[ ! -e /workdir/mkdocs ]]; then
         echo "Downloading documentation from Git Repository"
         git clone ${GIT_REPO} /workdir/mkdocs
     fi
@@ -33,6 +42,7 @@ if [ ${GIT_REPO} != 'false' ]; then
     get_docs
     start_mkdocs
 else
+    install_plugins
     check_install_status
     start_mkdocs
 fi
