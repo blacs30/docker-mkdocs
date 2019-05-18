@@ -40,9 +40,15 @@ get_docs () {
 
 if [ ${GIT_REPO} != 'false' ]; then
     get_docs
-    start_mkdocs
 else
     install_plugins
     check_install_status
-    start_mkdocs
 fi
+
+cmd=${1-empty}
+if [ "$cmd" = 'empty' ]; then
+      start_mkdocs
+fi
+
+exec "$@"
+
